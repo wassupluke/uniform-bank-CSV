@@ -1,14 +1,13 @@
 # importing required modules
 import calendar
-import csv
 from datetime import datetime
-import numpy as np
 import os
-import pandas as pd
 import shutil
 import sys
+import pandas as pd
 
 # TODO add function to generate categories
+
 
 def check_user() -> str:
     while True:
@@ -26,11 +25,12 @@ def check_user() -> str:
                 raise Exception(f'"{user}" wasn\'t an option. Try again.')
         except ValueError:
             print(
-                '\nThat didn\'t look like a valid number. Please try again, or '
-                'reach out to Luke for assistance getting this to run.\n'
+                '\nThat didn\'t look like a valid number. Please try again, '
+                'or reach out to Luke for assistance getting this to run.\n'
                 )
         except Exception as e:
             print(f'\n{e.args[0]}\n')
+
 
 def categorize():
     # e.g. ...
@@ -39,6 +39,28 @@ def categorize():
         'TRAVELNURSEACROS PAYROLL',
         ]
           }
+
+
+def save_to_sheet(name, minutes, row) -> None:
+    # Function pulled from BMS Challenges script, uploads data to GoogleSheets
+    print(f"-saving {name}'s {minutes} minutes to spreadsheet")
+
+    # Open the spreadsheet and the first sheet
+    path = 'assets/pygsheets_integration_service_key.json'
+    gc = pygsheets.authorize(service_account_file=path)
+    sh = gc.open("BMS IRL Challenges")
+    wks = sh.sheet1
+
+    wks.update_value('B' + str(row), name.capitalize())
+    wks.update_value('C' + str(row), minutes)
+
+    # Adds timestamp on spreadsheet
+    dtn = datetime.now()
+    now = (
+            f"{dtn.month}/{dtn.day}/{dtn.year} at "
+            "{dtn.hour}:{dtn.minute:02d} CST"
+            )
+    wks.update_value('B44', now)
 
 
 # -------------------------------------------------------------------------- #
@@ -72,7 +94,7 @@ while True:
         completed_folder = f'/home/{user}/Documents/bank statements/completed/'
 
         statements = os.listdir(path)
-        
+
         # ensure filenames matching the CSV file produced
         # by this script are ignored
         offender = 'I am ready to upload!'
@@ -101,7 +123,7 @@ while True:
 for statement in statements:
     # initalize a temporary dataframe
     tmp = pd.DataFrame()
-    
+
     # create Pandas dataframe from statement
     statement = os.path.join(path, statement)
     df = pd.read_csv(statement)
@@ -174,5 +196,5 @@ print(master)
 
 # write out the file file to CSV for uploading to Google Sheets
 now = datetime.now().strftime("%m-%d-%Y %H:%M:%S")
-master.to_csv(path + f'I am ready to upload! {now} ^_^.csv')
+master.to_csv(path + f'I am ready to upload! {now} ^_^.csv', index=False)
 print('ALL DONE! :D')
