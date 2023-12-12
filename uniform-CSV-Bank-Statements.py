@@ -1,12 +1,11 @@
 # importing required modules
 import calendar
 from datetime import datetime
+import json
 import os
 import shutil
 import sys
 import pandas as pd
-
-# TODO add function to generate categories
 
 
 def check_user() -> str:
@@ -19,7 +18,7 @@ def check_user() -> str:
             user = int(user)
             if user == 1:
                 return 'wassu'
-            elif user == 2:
+            if user == 2:
                 return 'alyssawass'
             else:
                 raise Exception(f'"{user}" wasn\'t an option. Try again.')
@@ -32,13 +31,31 @@ def check_user() -> str:
             print(f'\n{e.args[0]}\n')
 
 
-def categorize():
-    # e.g. ...
-    legend = {'Paycheck': [
-        'Mayo Foundation DIR DEP',
-        'TRAVELNURSEACROS PAYROLL',
-        ]
-          }
+def categorize(df: object) -> object:
+    # Function takes a pandas DataFrame and scans the Description column to
+    # see in what category the transaction should be placed. Function returns
+    # an updated DataFrame complete with categorized transactions.
+
+    # importing our list of categories
+    with open('categories.json', 'r') as file:
+        categories = json.load(file)
+
+    # iterate through the DataFrame rows and try matching a category
+    for row in df.index:
+        # remove spaces and some punctuation characters
+        description = df['Description'][row].lower().replace(" ", "")
+        description = description.replace('-', '').replace("'", "")
+
+        for category, text_to_match in categories.items():
+            for text in text_to_match:
+                # remove spaces
+                text = text.lower().replace(' ', '')
+                if text in description:
+                    # found a match, adding the category label
+                    df['Category'][row] = category
+                    break
+
+    return df
 
 
 def save_to_sheet(name, minutes, row) -> None:
@@ -78,11 +95,14 @@ print(
 # -------------------------------------------------------------------------- #
 
 # initializing master dataframe
-columns = (
-        'Quarter Date Amount Category '
-        'Description Year Month CheckNumber'
-        ).split()
-master = pd.DataFrame(columns=columns)
+columns = {
+        'Quarter': 'int', 'Date': 'str',
+        'Amount': 'float', 'Category': 'str',
+        'Description': 'str', 'Year': 'int',
+        'Month': 'str', 'CheckNumber': 'int'
+        }
+master = pd.DataFrame(columns=columns.keys())
+master = master.astype(columns)
 
 while True:
     try:
@@ -122,7 +142,8 @@ while True:
 
 for statement in statements:
     # initalize a temporary dataframe
-    tmp = pd.DataFrame()
+    tmp = pd.DataFrame(columns=columns.keys())
+    tmp = tmp.astype(columns)
 
     # create Pandas dataframe from statement
     statement = os.path.join(path, statement)
@@ -191,6 +212,9 @@ master['Month'] = master['Date'].dt.month.map(lambda x: calendar.month_abbr[x])
 master = master.sort_values(by=['Date']).reset_index(drop=True)
 # format the Date how she likes it :)
 master['Date'] = master['Date'].dt.strftime('%m/%d/%Y')
+
+# make a DataFrame from master's Category and Description columns
+master = categorize(master)
 
 print(master)
 
