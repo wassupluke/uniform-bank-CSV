@@ -1,0 +1,26 @@
+categories = {
+	# This is a comment
+	# Category: [list, of, descriptions],
+
+	'AirBNB Income': ['creditairbnbpayment'],
+	'Charity': ['the navigators donor'],
+	'Checks': ['check'],
+	'Coffee Shops': ['cafe steam', 'caribou', 'dixon', 'starbucks'],
+        'Gas': ['kwik trip'],
+	'Groceries': ['wal mart', 'costco', 'target', 'hyvee'],
+        'Insurance': ['AAA', 'state farm', 'home online hsa'],
+	'Internet': ['metro fibernet'],
+	'Interest Credit': ['interest credit'],
+        'Mortgage Payments': ['flagstar', 'roundpoint'],
+        'Paychecks': ['mayo foundation', 'travel nurse acros payroll'],
+	'Restaurants': ['panera bread'],
+        'Retirement Contributions': ['edward jones investment'],
+        'Shopping': ['amazon', 'amzn com', 'amzn mktp', 'best buy', 'ebay', 'llbean', 'monoprice', 'rough country'],
+	'Subscriptions': ['adobe inc', 'covenant eyes', 'patreon member', 'strava', 'zwift'],
+	'Transfers': ['external xfer dr to bremer bank', 'internal transfer'],
+	'Trash': ['debit lake shore recycl', 'sunshine sanita'],
+	'Utilities': ['minnesota energy', 'debit rochester public bill pay', 'rochester public u'],
+	'Vehicle Maintenance': ['subaru', 'discount tire'],
+	'Zelle Transactions': ['zelle'],
+	'529 Contributions': ['debit iowa 529'],
+        }
