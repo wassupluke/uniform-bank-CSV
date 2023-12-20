@@ -3,8 +3,10 @@ import calendar
 from datetime import datetime
 import json
 import os
+import re
 import shutil
 import sys
+import wordninja
 import pandas as pd
 
 
@@ -35,6 +37,7 @@ def categorize(df: object) -> object:
     # Function takes a pandas DataFrame and scans the Description column to
     # see in what category the transaction should be placed. Function returns
     # an updated DataFrame complete with categorized transactions.
+    # Function also fixes Description strings with wordninja.
 
     # importing our list of categories
     with open('categories.json', 'r') as file:
@@ -42,18 +45,25 @@ def categorize(df: object) -> object:
 
     # iterate through the DataFrame rows and try matching a category
     for row in df.index:
-        # remove spaces and some punctuation characters
-        description = df['Description'][row].lower().replace(" ", "")
-        description = description.replace('-', '').replace("'", "")
+        # remove non-word characters
+        description = df['Description'][row].lower()
+        description = re.sub(r'\W', '', description)
 
+        # search for a matching category for this description
         for category, text_to_match in categories.items():
             for text in text_to_match:
-                # remove spaces
-                text = text.lower().replace(' ', '')
+                # remove non-word characters
+                text = text.lower()
+                text = re.sub('r\W', '', text)
                 if text in description:
                     # found a match, adding the category label
                     df['Category'][row] = category
                     break
+
+        # replace the description with a nice wordninja'd version
+        description = wordninja.split(description)
+        description = ' '.join(replacement)
+        df['Description'][row] = description
 
     return df
 
