@@ -62,7 +62,7 @@ def categorize(df: object) -> object:
 
         # replace the description with a nice wordninja'd version
         description = wordninja.split(description)
-        description = ' '.join(replacement)
+        description = ' '.join(description)
         df['Description'][row] = description
 
     return df
