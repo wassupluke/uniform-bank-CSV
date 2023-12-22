@@ -39,31 +39,47 @@ def categorize(df: object) -> object:
     # an updated DataFrame complete with categorized transactions.
     # Function also fixes Description strings with wordninja.
 
-    # importing our list of categories
-    with open('categories.json', 'r') as file:
-        categories = json.load(file)
-
     # iterate through the DataFrame rows and try matching a category
     for row in df.index:
         # remove non-word characters
-        description = df['Description'][row].lower()
-        description = re.sub(r'\W', '', description)
-
+        desc = df.at[row, 'Description'].lower()
+        print(f'Input: {desc}')
+        desc = re.sub(r'\W', '', desc)
+        print(f'Stripped: {desc}')
+        
         # search for a matching category for this description
         for category, text_to_match in categories.items():
             for text in text_to_match:
                 # remove non-word characters
                 text = text.lower()
                 text = re.sub('r\W', '', text)
-                if text in description:
+                if text in desc:
                     # found a match, adding the category label
-                    df['Category'][row] = category
+                    df.at[row, 'Category'] = category
                     break
 
+        # fix specific typos
+        desc = re.sub(r'ofrevenmn', 'ofrevenumn', desc)
+        desc = re.sub(r'loanpymt', 'loanpayment', desc)
+        desc = re.sub(r'photogphy', 'photography', desc)
+        desc = re.sub(r'intmtgpay', 'intmortgagepay', desc)
+        desc = re.sub(r'rerecycllake', 'rerecyclelake', desc)
+        desc = re.sub(r'nurseacrospay', 'nurseacrosspay', desc)        
+        
         # replace the description with a nice wordninja'd version
-        description = wordninja.split(description)
-        description = ' '.join(description)
-        df['Description'][row] = description
+        desc = wordninja.split(desc)
+        desc = ' '.join(desc)
+
+        # fix specific strings that wordninja parses incorrectly
+        desc = re.sub(r'z elle', 'zelle', desc)
+        desc = re.sub(r'cost co', 'costco', desc)
+        desc = re.sub(r'lo raine', 'loraine', desc)
+        desc = re.sub(r'pat re on', 'patreon', desc)
+        desc = re.sub(r'round point', 'roundpoint', desc)
+        desc = re.sub(r'goh lever bank', 'gohl everbank', desc)
+
+        print(f'Output: {desc}', end='\n\n\n')
+        df.at[row, 'Description'] = desc
 
     return df
 
