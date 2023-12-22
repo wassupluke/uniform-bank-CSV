@@ -39,13 +39,15 @@ def categorize(df: object) -> object:
     # an updated DataFrame complete with categorized transactions.
     # Function also fixes Description strings with wordninja.
 
+    # importing our list of categories
+    with open('categories.json', 'r') as file:
+        categories = json.load(file)
+
     # iterate through the DataFrame rows and try matching a category
     for row in df.index:
         # remove non-word characters
         desc = df.at[row, 'Description'].lower()
-        print(f'Input: {desc}')
         desc = re.sub(r'\W', '', desc)
-        print(f'Stripped: {desc}')
 
         # search for a matching category for this description
         for category, text_to_match in categories.items():
@@ -78,7 +80,7 @@ def categorize(df: object) -> object:
         desc = re.sub(r'round point', 'roundpoint', desc)
         desc = re.sub(r'goh lever bank', 'gohl everbank', desc)
 
-        print(f'Output: {desc}', end='\n\n\n')
+        # replace old, messy description with pretty, new one
         df.at[row, 'Description'] = desc
 
     return df
@@ -86,7 +88,6 @@ def categorize(df: object) -> object:
 
 def save_to_sheet(name, minutes, row) -> None:
     # Function pulled from BMS Challenges script, uploads data to GoogleSheets
-    print(f"-saving {name}'s {minutes} minutes to spreadsheet")
 
     # Open the spreadsheet and the first sheet
     path = 'assets/pygsheets_integration_service_key.json'
@@ -221,7 +222,7 @@ for statement in statements:
                 'store the bank statements I\'ve finished processing.\n'
                 )
     # and move the statement to the 'completed' folder
-    print(f'\nMoving {statement.split("/")[-1]} to the completed folder.\n')
+    print(f'Moving {statement.split("/")[-1]} to the completed folder.')
     shutil.move(statement, completed_folder)
 
 # format Date column to datetime format for subsequent processing
