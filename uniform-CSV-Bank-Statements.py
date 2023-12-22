@@ -46,13 +46,13 @@ def categorize(df: object) -> object:
         print(f'Input: {desc}')
         desc = re.sub(r'\W', '', desc)
         print(f'Stripped: {desc}')
-        
+
         # search for a matching category for this description
         for category, text_to_match in categories.items():
             for text in text_to_match:
                 # remove non-word characters
                 text = text.lower()
-                text = re.sub('r\W', '', text)
+                text = re.sub(r'\W', '', text)
                 if text in desc:
                     # found a match, adding the category label
                     df.at[row, 'Category'] = category
@@ -64,8 +64,8 @@ def categorize(df: object) -> object:
         desc = re.sub(r'photogphy', 'photography', desc)
         desc = re.sub(r'intmtgpay', 'intmortgagepay', desc)
         desc = re.sub(r'rerecycllake', 'rerecyclelake', desc)
-        desc = re.sub(r'nurseacrospay', 'nurseacrosspay', desc)        
-        
+        desc = re.sub(r'nurseacrospay', 'nurseacrosspay', desc)
+
         # replace the description with a nice wordninja'd version
         desc = wordninja.split(desc)
         desc = ' '.join(desc)
