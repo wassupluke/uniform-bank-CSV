@@ -73,11 +73,19 @@ def categorize(df: object) -> object:
         desc = ' '.join(desc)
 
         # fix specific strings that wordninja parses incorrectly
+        desc = re.sub(r'am zn', 'amazon', desc)
+        desc = re.sub(r'nc sbn', 'ncsbn', desc)
         desc = re.sub(r'z elle', 'zelle', desc)
         desc = re.sub(r'cost co', 'costco', desc)
+        desc = re.sub(r'air b nb', 'airbnb', desc)
         desc = re.sub(r'lo raine', 'loraine', desc)
         desc = re.sub(r'pat re on', 'patreon', desc)
+        desc = re.sub(r'p at re on', 'patreon', desc)
+        desc = re.sub(r'tia a bank', 'tiaa bank', desc)
+        desc = re.sub(r'zw if tinc', 'zwift inc', desc)
         desc = re.sub(r'round point', 'roundpoint', desc)
+        desc = re.sub(r'stra vain cg', 'strava inc g', desc)
+        desc = re.sub(r'costcow hse', 'costco wholesale', desc)
         desc = re.sub(r'goh lever bank', 'gohl everbank', desc)
 
         # replace old, messy description with pretty, new one
