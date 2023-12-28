@@ -9,6 +9,9 @@ import sys
 import wordninja
 import pandas as pd
 
+# TODO split Amount col into Income and Expense cols
+# see https://sparkbyexamples.com/pandas/split-pandas-dataframe-by-column-value/
+
 
 def check_user() -> str:
     while True:
@@ -22,8 +25,7 @@ def check_user() -> str:
                 return 'wassu'
             if user == 2:
                 return 'alyssawass'
-            else:
-                raise Exception(f'"{user}" wasn\'t an option. Try again.')
+            raise Exception(f'"{user}" wasn\'t an option. Try again.')
         except ValueError:
             print(
                 '\nThat didn\'t look like a valid number. Please try again, '
@@ -87,6 +89,9 @@ def categorize(df: object) -> object:
         desc = re.sub(r'stra vain cg', 'strava inc g', desc)
         desc = re.sub(r'costcow hse', 'costco wholesale', desc)
         desc = re.sub(r'goh lever bank', 'gohl everbank', desc)
+
+        # get rid of the PREAUTHORIZED part
+        desc = re.sub(r'preauthorized\s(?:credit |debit )*', '', desc)
 
         # replace old, messy description with pretty, new one
         df.at[row, 'Description'] = desc
@@ -230,7 +235,7 @@ for statement in statements:
                 'store the bank statements I\'ve finished processing.\n'
                 )
     # and move the statement to the 'completed' folder
-    print(f'Moving {statement.split("/")[-1]} to the completed folder.')
+    print('.', end='')
     shutil.move(statement, completed_folder)
 
 # format Date column to datetime format for subsequent processing
@@ -251,7 +256,7 @@ master['Date'] = master['Date'].dt.strftime('%m/%d/%Y')
 # make a DataFrame from master's Category and Description columns
 master = categorize(master)
 
-print(master)
+print(f'\n{master}\n{master.size} cells processed.\n')
 
 # write out the file file to CSV for uploading to Google Sheets
 now = datetime.now().strftime("%m-%d-%Y %H:%M:%S")
