@@ -1,3 +1,11 @@
+# Currently, Pandas gives a FutureWarning regarding concatenation of
+# dataframes with some or all-NA values. It just says to make sure to take out
+# any NA content (like empty rows) prior to concatenation when the next
+# release comes out. For now, it prints the warning to terminal and it's ugly.
+# So let's ignore it.
+import warnings
+warnings.simplefilter(action='ignore', category=FutureWarning)
+
 # importing required modules
 import calendar
 from datetime import datetime
@@ -6,11 +14,9 @@ import os
 import re
 import shutil
 import sys
+import time
 import wordninja
 import pandas as pd
-
-# TODO split Amount col into Income and Expense cols
-# see https://sparkbyexamples.com/pandas/split-pandas-dataframe-by-column-value/
 
 
 def check_user() -> str:
@@ -37,29 +43,29 @@ def check_user() -> str:
 
 def categorize(df: object) -> object:
     # Function takes a pandas DataFrame and scans the Description column to
-    # see in what category the transaction should be placed. Function returns
-    # an updated DataFrame complete with categorized transactions.
+    # see in what subcategory the transaction should be placed. Function
+    # returns an updated DataFrame complete with categorized transactions.
     # Function also fixes Description strings with wordninja.
 
     # importing our list of categories
-    with open('categories.json', 'r') as file:
+    with open('subcategories.json', 'r', encoding='utf-8') as file:
         categories = json.load(file)
 
-    # iterate through the DataFrame rows and try matching a category
+    # iterate through the DataFrame rows and try matching a subcategory
     for row in df.index:
         # remove non-word characters
         desc = df.at[row, 'Description'].lower()
         desc = re.sub(r'\W', '', desc)
 
-        # search for a matching category for this description
-        for category, text_to_match in categories.items():
+        # search for a matching subcategory for this description
+        for subcategory, text_to_match in categories.items():
             for text in text_to_match:
                 # remove non-word characters
                 text = text.lower()
                 text = re.sub(r'\W', '', text)
                 if text in desc:
-                    # found a match, adding the category label
-                    df.at[row, 'Category'] = category
+                    # found a match, adding the subcategory label
+                    df.at[row, 'SubCategory'] = subcategory
                     break
 
         # fix specific typos
@@ -91,33 +97,12 @@ def categorize(df: object) -> object:
         desc = re.sub(r'goh lever bank', 'gohl everbank', desc)
 
         # get rid of the PREAUTHORIZED part
-        desc = re.sub(r'preauthorized\s(?:credit |debit )*', '', desc)
+        desc = re.sub(r'pre[| ]authorized\s(?:credit |debit )*', '', desc)
 
         # replace old, messy description with pretty, new one
         df.at[row, 'Description'] = desc
 
     return df
-
-
-def save_to_sheet(name, minutes, row) -> None:
-    # Function pulled from BMS Challenges script, uploads data to GoogleSheets
-
-    # Open the spreadsheet and the first sheet
-    path = 'assets/pygsheets_integration_service_key.json'
-    gc = pygsheets.authorize(service_account_file=path)
-    sh = gc.open("BMS IRL Challenges")
-    wks = sh.sheet1
-
-    wks.update_value('B' + str(row), name.capitalize())
-    wks.update_value('C' + str(row), minutes)
-
-    # Adds timestamp on spreadsheet
-    dtn = datetime.now()
-    now = (
-            f"{dtn.month}/{dtn.day}/{dtn.year} at "
-            "{dtn.hour}:{dtn.minute:02d} CST"
-            )
-    wks.update_value('B44', now)
 
 
 # -------------------------------------------------------------------------- #
@@ -136,10 +121,16 @@ print(
 
 # initializing master dataframe
 columns = {
-        'Quarter': 'int', 'Date': 'str',
-        'Amount': 'float', 'Category': 'str',
-        'Description': 'str', 'Year': 'int',
-        'Month': 'str', 'CheckNumber': 'int'
+        'Quarter': 'int',
+        'Date': 'str',
+        'Income': 'float',
+        'Expense': 'float',
+        'Category': 'str',
+        'SubCategory': 'str',
+        'Description': 'str',
+        'Year': 'int',
+        'Month': 'str',
+        'CheckNumber': 'int'
         }
 master = pd.DataFrame(columns=columns.keys())
 master = master.astype(columns)
@@ -179,6 +170,8 @@ while True:
                 'you selected the correct option. Please try again.\n'
                 )
 
+# Start the timer, let's see how fast this baby runs!
+start = time.time()
 
 for statement in statements:
     # initalize a temporary dataframe
@@ -214,16 +207,20 @@ for statement in statements:
 
     # Fourth, locate the column containing 'amount'
     # *note that Bremer has 'withdrawl amount' and 'deposit amount'
-    amt_col = df[df.columns[df.columns.str.contains('Amount')]]
-    if len(amt_col.columns) == 2:
-        # this is the case for Bremer where we need to combine the columns
-        # first let's name both columns
-        amt_col.columns = 'Amount Deposit'.split()
-        # now let's fill blanks in the Amount column with values from Deposit
-        amt_col.Amount.fillna(amt_col.Deposit, inplace=True)
-        # we don't need the Deposit column anymore, so delete it
-        del amt_col['Deposit']
-    tmp['Amount'] = amt_col
+    amt_cols = df[df.columns[df.columns.str.contains('Amount')]]
+    if len(amt_cols.columns) == 2:
+        # this is the case for Bremer where we simply rename the columns
+        amt_cols.columns = 'Expense Income'.split()
+        tmp['Income'] = amt_cols['Income']
+        tmp['Expense'] = amt_cols['Expense']
+    else:
+        tmp['Income'] = amt_cols[amt_cols >= 0]
+        tmp['Expense'] = amt_cols[amt_cols < 0]
+    # now lets label these rows with 'Income' or 'Expense' as well
+    # this may be handy for fine-tuning graphs in Excel or GoogleSheets
+    tmp.loc[tmp['Income'] >= 0, 'Category'] = 'Income'
+    tmp.Category.fillna('Expense', inplace=True)
+
     # Finally, add tmp to master
     master = pd.concat([master, tmp])
 
@@ -253,12 +250,15 @@ master = master.sort_values(by=['Date']).reset_index(drop=True)
 # format the Date how she likes it :)
 master['Date'] = master['Date'].dt.strftime('%m/%d/%Y')
 
-# make a DataFrame from master's Category and Description columns
+# make a DataFrame from master's SubCategory and Description columns
 master = categorize(master)
+
+# Stop the clock!
+end = time.time()
 
 print(f'\n{master}\n{master.size} cells processed.\n')
 
 # write out the file file to CSV for uploading to Google Sheets
 now = datetime.now().strftime("%m-%d-%Y %H:%M:%S")
 master.to_csv(path + f'I am ready to upload! {now} ^_^.csv', index=False)
-print('ALL DONE! :D')
+print('ALL DONE! :D', f'Took only {end - start:.3}s to complete')
