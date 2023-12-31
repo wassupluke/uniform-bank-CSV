@@ -1,31 +1,38 @@
 {
-"AirBNB Income": ["creditairbnbpayment"],
+"AirBNB Income": ["creditairbnbpayment", "visa transfer airbnb"],
 
-"Charity": ["the navigators donor"],
-"Checks": ["check"],
-"Coffee Shops": ["cafe steam", "caribou", "dixon", "starbucks"],
+"Car Payments": ["jpmorgan chase"],
+"Charity": ["berean community", "the navigators donor"],
+"Checks": ["check", "mobile dep capture"],
+"Coffee Shops": ["cafe steam", "caribou", "dixon", "dutch bros", "starbucks"],
+"Credit Card Payments": ["amexepayment"],
 
-"Gas": ["kwik trip"],
-"Groceries": ["wal mart", "costco", "target", "hyvee"],
+"Gas": ["holiday stations", "kwik trip", "loves", "shell service"],
+"Groceries": ["costco", "hyvee", "peoples food coop", "target", "wal mart"],
 
-"Insurance": ["AAA", "state farm", "home online hsa"],
-"Internet": ["metro fibernet"], 
+"Fast Food": ["dairy queen", "mayo harwic", "mayo st mary"],
+
+"Insurance": ["AAA", "state farm", "home shield hsa", "home online hsa"],
+"Internet": ["metro fibernet, metronet"], 
 "Interest Credit": ["interest credit"], 
 
 "Mortgage Payments": ["flagstar", "roundpoint"], 
 
 "Paychecks": ["mayo foundation", "travel nurse acros payroll"], 
+"Pharmacy": ["pharmacy"],
 
-"Restaurants": ["panera bread"], 
-"Retirement Contributions": ["edward jones investment"], 
+"Rent Payments": [],
+"Restaurants": ["panera bread", "pizza"], 
+"Retirement Contributions": ["bank to ira", "edward jones investment"], 
 
-"Shopping": ["amazon", "amzn com", "amzn mktp", "best buy", "ebay", "llbean", "monoprice", "rough country"],
-"Subscriptions": ["adobe inc", "covenant eyes", "patreon member", "strava", "zwift"], 
+"Shopping": ["amazon", "amzn com", "amzn mktp", "best buy", "ebay", "home depot", "llbean", "monoprice", "rough country"],
+"Subscriptions": ["adobe", "covenant eyes", "patreon", "patreon member", "strava", "zwift"], 
 
-"Transfers": ["external xfer dr to bremer bank", "internal transfer"], 
+"Tax Returns": ["mn dept of revenu mn st tax", "tax ref", "tax rfd"],
+"Transfers": ["external xfer dr to bremer bank", "internal transfer", "deposit system"], 
 "Trash": ["debit lake shore recycl", "sunshine sanita"], 
 
-"Utilities": ["minnesota energy", "debit rochester public bill pay", "rochester public u"], 
+"Utilities": ["minnesota energy", "debit rochester public bill pay", "rochester public u", "wyze app"], 
 
 "Vehicle Maintenance": ["subaru", "discount tire"],
 
