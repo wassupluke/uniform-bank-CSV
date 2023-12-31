@@ -1,5 +1,5 @@
 # Bank Statement Data Processor
-This tool automates the processing of bank statement data from multiple banks, even when the CSV formats vary. It transforms the data into a unified CSV format, making it convenient for personal finance analysis.
+This tool automates the processing of bank statement data from multiple banks, even when the CSV formats vary. It transforms the data into a unified CSV format, making it super convenient for personal finance analysis.
 
 ## Features
   - Supports multiple banks with variable CSV formatting.
