@@ -123,6 +123,7 @@ print(
 columns = {
         'Quarter': 'int',
         'Date': 'str',
+        'Amount': 'float',
         'Income': 'float',
         'Expense': 'float',
         'Category': 'str',
@@ -130,6 +131,7 @@ columns = {
         'Description': 'str',
         'Year': 'int',
         'Month': 'str',
+        'Month#': 'int',
         'CheckNumber': 'int'
         }
 master = pd.DataFrame(columns=columns.keys())
@@ -212,10 +214,12 @@ for statement in statements:
         # this is the case for Bremer where we simply rename the columns
         amt_cols.columns = 'Expense Income'.split()
         tmp['Income'] = amt_cols['Income']
-        tmp['Expense'] = amt_cols['Expense']
+        tmp['Expense'] = amt_cols['Expense'].abs()
+        tmp['Amount'] = amt_cols.Income.fillna(amt_cols.Expense, inplace=True)
     else:
+        tmp['Amount'] = amt_cols
         tmp['Income'] = amt_cols[amt_cols >= 0]
-        tmp['Expense'] = amt_cols[amt_cols < 0]
+        tmp['Expense'] = amt_cols[amt_cols < 0].abs()
     # now lets label these rows with 'Income' or 'Expense' as well
     # this may be handy for fine-tuning graphs in Excel or GoogleSheets
     tmp.loc[tmp['Income'] >= 0, 'Category'] = 'Income'
@@ -245,6 +249,7 @@ master['Quarter'] = master['Date'].dt.quarter
 master['Year'] = master['Date'].dt.year
 # calculate Months
 master['Month'] = master['Date'].dt.month.map(lambda x: calendar.month_abbr[x])
+master['Month#'] = master['Date'].dt.month
 # sort by Date and drop the extra index
 master = master.sort_values(by=['Date']).reset_index(drop=True)
 # format the Date how she likes it :)
