@@ -214,16 +214,23 @@ for statement in statements:
         # this is the case for Bremer where we simply rename the columns
         amt_cols.columns = 'Expense Income'.split()
         tmp['Income'] = amt_cols['Income']
-        tmp['Expense'] = amt_cols['Expense'].abs()
         tmp['Amount'] = amt_cols['Income']
         tmp['Amount'] = tmp['Amount'].fillna(amt_cols['Expense'], inplace=True)
+        tmp['Expense'] = amt_cols['Expense'].abs()
+    # AMEX, as a credit card, shows purchases as positive numbers, and returns
+    # as negative numbers, so let's handle that case.
+    elif any(df.columns.str.contains('Appears On Your Statement As')):
+        tmp['Income'] = amt_cols[amt_cols < 0].abs()
+        tmp['Expense'] = amt_cols[amt_cols >= 0]
+        tmp['Amount'] = tmp['Income']
+        tmp.Amount.fillna(-tmp['Expense'], inplace=True)
     else:
         tmp['Amount'] = amt_cols
         tmp['Income'] = amt_cols[amt_cols >= 0]
         tmp['Expense'] = amt_cols[amt_cols < 0].abs()
     # now lets label these rows with 'Income' or 'Expense' as well
     # this may be handy for fine-tuning graphs in Excel or GoogleSheets
-    tmp.loc[tmp['Income'] >= 0, 'Category'] = 'Income'
+    tmp.loc[tmp['Amount'] >= 0, 'Category'] = 'Income'
     tmp.Category.fillna('Expense', inplace=True)
 
     # Finally, add tmp to master
