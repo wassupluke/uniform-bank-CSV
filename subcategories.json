@@ -4,11 +4,10 @@
 "Car Payments": ["jpmorgan chase"],
 "Charity": ["berean community", "the navigators donor"],
 "Checks": ["check", "mobile dep capture"],
-"Coffee Shops": ["cafe steam", "caribou", "dixon", "dutch bros", "starbucks"],
+"Coffee Shops": ["cafe steam", "caribou", "coffee", "dixon", "dutch bros", "espresso", "starbucks"],
 "Credit Card Payments": ["amexepayment"],
 
-"Recreation": ["usgs gov"],
-"Fast Food": ["dairy queen", "mayo harwic", "mayo st mary"],
+"Fast Food": ["dairy queen", "mayo harwic", "mayo method", "mayo st mary"],
 "Fees / Services": ["building safety", "citations", "driver services", "oertli pleschourt", "park mobile", "usps po"],
 
 "Gas": ["costco gas", "holiday stations", "kwik trip", "loves", "shell service"],
@@ -26,12 +25,13 @@
 "Paychecks": ["mayo foundation", "travel nurse acros payroll"], 
 "Pharmacy": ["pharmacy"],
 
+"Recreation": ["usgs gov"],
 "Rent Payments": [],
 "Restaurants": ["panera bread", "pizza"], 
 "Retirement Contributions": ["bank to ira", "edward jones investment"], 
 
 "Shopping": ["amazon", "amzn com", "amzn mktp", "best buy", "ebay", "home depot", "llbean", "monoprice", "rough country"],
-"Subscriptions": ["adobe", "covenant eyes", "patreon", "patreon member", "strava", "zwift"], 
+"Subscriptions": ["adobe", "covenant eyes", "patreon", "patreon member", "strava", "wyze", "zwift"], 
 
 "Tax Returns": ["mn dept of revenu mn st tax", "tax ref", "tax rfd"],
 "Transfers": ["external xfer dr to bremer bank", "internal transfer", "deposit system"], 
