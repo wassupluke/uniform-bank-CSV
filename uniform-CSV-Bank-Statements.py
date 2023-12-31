@@ -215,7 +215,8 @@ for statement in statements:
         amt_cols.columns = 'Expense Income'.split()
         tmp['Income'] = amt_cols['Income']
         tmp['Expense'] = amt_cols['Expense'].abs()
-        tmp['Amount'] = amt_cols.Income.fillna(amt_cols.Expense, inplace=True)
+        tmp['Amount'] = amt_cols['Income']
+        tmp['Amount'] = tmp['Amount'].fillna(amt_cols['Expense'], inplace=True)
     else:
         tmp['Amount'] = amt_cols
         tmp['Income'] = amt_cols[amt_cols >= 0]
