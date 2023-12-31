@@ -7,13 +7,13 @@
 "Coffee Shops": ["cafe steam", "caribou", "dixon", "dutch bros", "starbucks"],
 "Credit Card Payments": ["amexepayment"],
 
-"Gas": ["holiday stations", "kwik trip", "loves", "shell service"],
-"Groceries": ["costco", "hyvee", "peoples food coop", "target", "wal mart"],
+"Gas": ["costco gas", "holiday stations", "kwik trip", "loves", "shell service"],
+"Groceries": ["costco", "hyvee", "peoples food coop", "sams club", "target", "wal mart"],
 
 "Fast Food": ["dairy queen", "mayo harwic", "mayo st mary"],
 
 "Insurance": ["AAA", "state farm", "home shield hsa", "home online hsa"],
-"Internet": ["metro fibernet, metronet"], 
+"Internet": ["metro fiber", "metro fibernet", "metronet"], 
 "Interest Credit": ["interest credit"], 
 
 "Mortgage Payments": ["flagstar", "roundpoint"], 
