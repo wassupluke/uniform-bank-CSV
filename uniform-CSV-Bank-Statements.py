@@ -86,6 +86,7 @@ def categorize(df: object) -> object:
         desc = re.sub(r'z elle', 'zelle', desc)
         desc = re.sub(r'cost co', 'costco', desc)
         desc = re.sub(r'air b nb', 'airbnb', desc)
+        desc = re.sub(r'air bn b', 'airbnb ', desc)
         desc = re.sub(r'lo raine', 'loraine', desc)
         desc = re.sub(r'pat re on', 'patreon', desc)
         desc = re.sub(r'p at re on', 'patreon', desc)
@@ -265,6 +266,22 @@ master['Date'] = master['Date'].dt.strftime('%m/%d/%Y')
 
 # make a DataFrame from master's SubCategory and Description columns
 master = categorize(master)
+
+# Before we break the strings back into words, let's remove any rows
+# for credit card payments, as credit card payments are just the sum
+# owed of money we've already spent on individual purchases. The
+# individual purchases will all be detailed and covered by the rest of
+# the data. So we need not bother with seeing numbers for credit card
+# payments.
+card_pymt_rows = master[
+        (master['Description'] == 'payment thankyou') |
+        (master['SubCategory'] == 'Credit Card Payments')
+        ].index
+master.drop(card_pymt_rows, inplace=True)
+
+# Let's also drop all amounts of $0.00
+zeros = master[(master['Amount'] == 0)].index
+master.drop(zeros, inplace=True)
 
 # Stop the clock!
 end = time.time()

@@ -10,8 +10,8 @@
 "Fast Food": ["dairy queen", "mayo harwic", "mayo method", "mayo st mary"],
 "Fees / Services": ["building safety", "citations", "driver services", "oertli pleschourt", "park mobile", "usps po"],
 
-"Gas": ["costco gas", "holiday stations", "kwik trip", "loves", "shell service"],
-"Groceries": ["costco", "hyvee", "peoples food coop", "sams club", "target", "wal mart"],
+"Gas": ["cenex", "costco gas", "holiday stations", "kwik trip", "loves", "shell service"],
+"Groceries": ["costco", "hyvee", "peoples food coop", "melaleuca", "safeway", "sams club", "target", "wal mart"],
 
 "Insurance": ["AAA", "state farm", "home shield hsa", "home online hsa"],
 "Internet": ["metro fiber", "metro fibernet", "metronet"], 
@@ -22,7 +22,7 @@
 
 "Nursing": ["college transcript", "ncsbn", "nursing", "nursing cas", "parchment"],
 
-"Paychecks": ["mayo foundation", "travel nurse acros payroll"], 
+"Paychecks": ["Credit Card Paymentsmayo foundation", "travel nurse acros payroll"], 
 "Pharmacy": ["pharmacy"],
 
 "Recreation": ["usgs gov"],
@@ -30,7 +30,7 @@
 "Restaurants": ["panera bread", "pizza"], 
 "Retirement Contributions": ["bank to ira", "edward jones investment"], 
 
-"Shopping": ["amazon", "amzn com", "amzn mktp", "best buy", "ebay", "home depot", "llbean", "monoprice", "rough country"],
+"Shopping": ["amazon", "amzn com", "amzn mktp", "best buy", "ebay", "goodwill", "home depot", "llbean", "monoprice", "rough country"],
 "Subscriptions": ["adobe", "covenant eyes", "patreon", "patreon member", "strava", "wyze", "zwift"], 
 
 "Tax Returns": ["mn dept of revenu mn st tax", "tax ref", "tax rfd"],
