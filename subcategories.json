@@ -36,6 +36,7 @@
 "Tax Returns": ["mn dept of revenu mn st tax", "tax ref", "tax rfd"],
 "Transfers": ["external xfer dr to bremer bank", "internal transfer", "deposit system"], 
 "Trash": ["debit lake shore recycl", "sunshine sanita"], 
+"Travel": ["doubletree", "expedia", "hampton inn", "hilton"],
 
 "Utilities": ["minnesota energy", "debit rochester public bill pay", "rochester public u", "wyze app"], 
 
