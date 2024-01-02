@@ -2,7 +2,7 @@
 "AirBNB Income": ["creditairbnbpayment", "visa transfer airbnb"],
 
 "Car Payments": ["jpmorgan chase"],
-"Charity": ["berean community", "the navigators donor"],
+"Charity": ["berean community", "the navigators donor", "wycliffe bible"],
 "Checks": ["check", "mobile dep capture"],
 "Coffee Shops": ["cafe steam", "caribou", "coffee", "dixon", "dutch bros", "espresso", "starbucks"],
 "Credit Card Payments": ["amexepayment"],
@@ -31,7 +31,7 @@
 "Retirement Contributions": ["bank to ira", "edward jones investment"], 
 
 "Shopping": ["amazon", "amzn com", "amzn mktp", "best buy", "ebay", "goodwill", "home depot", "llbean", "monoprice", "rough country"],
-"Subscriptions": ["adobe", "covenant eyes", "patreon", "patreon member", "strava", "wyze", "zwift"], 
+"Subscriptions": ["adobe", "covenant eyes", "patreon", "patreon member", "spotify", "strava", "wyze", "zwift"], 
 
 "Tax Returns": ["mn dept of revenu mn st tax", "tax ref", "tax rfd"],
 "Transfers": ["external xfer dr to bremer bank", "internal transfer", "deposit system"], 

@@ -48,7 +48,9 @@ def categorize(df: object) -> object:
     # Function also fixes Description strings with wordninja.
 
     # importing our list of categories
-    with open('subcategories.json', 'r', encoding='utf-8') as file:
+    dirname = os.path.dirname(__file__)
+    subcategory_filepath = os.path.join(dirname, 'subcategories.json')
+    with open(subcategory_filepath, 'r', encoding='utf-8') as file:
         categories = json.load(file)
 
     # iterate through the DataFrame rows and try matching a subcategory
@@ -110,10 +112,10 @@ def categorize(df: object) -> object:
 
 # a little help text to kick things off
 print(
-        '\nThis script expects the statements to contain one of the '
-        'following bits of text in order to correctly identify the bank from '
-        'which it came. It is case-insensitive.\n\n'
+        '\nThis script expects the transaction files in .csv format.'
+        '\n\n'
         '# -------------------------------------------------------------- #\n'
+        '# ------         Bank Transaction File Processor for      ------ #\n'
         '# ------           AMEX, Bremer, TIAA, or EverBank        ------ #\n'
         '# -------------------------------------------------------------- #\n'
         )
@@ -149,12 +151,17 @@ while True:
 
         statements = os.listdir(path)
 
-        # ensure filenames matching the CSV file produced
-        # by this script are ignored
+        # ensure filenames matching the CSV file produced by this script, and
+        # lock files (produced when a file is open in libreoffice) are
+        # ignored, and only keep .csv files.
         offender = 'I am ready to upload!'
+        lock_file = '.~lock.'
         csv_ext = '.csv'
         statements = [
-                x for x in statements if offender not in x if csv_ext in x
+                x for x in statements\
+                        if offender not in x\
+                        if lock_file not in x\
+                        if csv_ext in x
                 ]
 
         # ensure there is at least one valid statement to process, else quit
@@ -234,20 +241,11 @@ for statement in statements:
     tmp.loc[tmp['Amount'] >= 0, 'Category'] = 'Income'
     tmp.Category.fillna('Expense', inplace=True)
 
+    print('.', end='')
     # Finally, add tmp to master
     master = pd.concat([master, tmp])
 
-    # before moving the file, ensure the destination folder exists or make it
-    if not os.path.exists(completed_folder):
-        os.makedirs(completed_folder)
-        print(
-                f'\nI made a new folder located at {completed_folder} to '
-                'store the bank statements I\'ve finished processing.\n'
-                )
-    # and move the statement to the 'completed' folder
-    print('.', end='')
-    shutil.move(statement, completed_folder)
-
+    
 # format Date column to datetime format for subsequent processing
 master['Date'] = pd.to_datetime(master['Date'], format='mixed')
 # drop rows with missing dates
@@ -283,6 +281,21 @@ master.drop(card_pymt_rows, inplace=True)
 zeros = master[(master['Amount'] == 0)].index
 master.drop(zeros, inplace=True)
 
+# before moving the files, ensure the destination folder exists or make it
+if not os.path.exists(completed_folder):
+    os.makedirs(completed_folder)
+    print(
+            f'\nI made a new folder located at {completed_folder} to '
+            'store the bank statements I\'ve finished processing.\n'
+            )
+# and move the statements to the 'completed' folder
+unable_to_move = []
+for statement in statements:
+    try:
+        shutil.move(statement, completed_folder)
+    except shutil.Error:
+        unable_to_move.append(statement)
+
 # Stop the clock!
 end = time.time()
 
@@ -292,3 +305,13 @@ print(f'\n{master}\n{master.size} cells processed.\n')
 now = datetime.now().strftime("%m-%d-%Y %H:%M:%S")
 master.to_csv(path + f'I am ready to upload! {now} ^_^.csv', index=False)
 print('ALL DONE! :D', f'Took only {end - start:.3}s to complete')
+
+if len(unable_to_move) > 0:
+    print(
+            '\nOpe, the following files already exist in the '
+            f'"{completed_folder}" folder.\nYou will need to move the file '
+            'yourself or just delete it if you\'re done.'
+        )
+    for file in unable_to_move:
+        print(f'\t --> {file}')
+
