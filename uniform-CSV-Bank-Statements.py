@@ -159,9 +159,9 @@ while True:
         csv_ext = '.csv'
         statements = [
                 x for x in statements\
-                    if offender not in x\
-                    if lock_file not in x\
-                    if csv_ext in x
+                if offender not in x\
+                if lock_file not in x\
+                if csv_ext in x
                 ]
 
         # ensure there is at least one valid statement to process, else quit
