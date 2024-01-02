@@ -1,11 +1,3 @@
-# Currently, Pandas gives a FutureWarning regarding concatenation of
-# dataframes with some or all-NA values. It just says to make sure to take out
-# any NA content (like empty rows) prior to concatenation when the next
-# release comes out. For now, it prints the warning to terminal and it's ugly.
-# So let's ignore it.
-import warnings
-warnings.simplefilter(action='ignore', category=FutureWarning)
-
 # importing required modules
 import calendar
 from datetime import datetime
@@ -17,6 +9,13 @@ import sys
 import time
 import wordninja
 import pandas as pd
+# Currently, Pandas gives a FutureWarning regarding concatenation of
+# dataframes with some or all-NA values. It just says to make sure to take out
+# any NA content (like empty rows) prior to concatenation when the next
+# release comes out. For now, it prints the warning to terminal and it's ugly.
+# So let's ignore it.
+import warnings
+warnings.simplefilter(action='ignore', category=FutureWarning)
 
 
 def check_user() -> str:
@@ -158,9 +157,9 @@ while True:
         lock_file = '.~lock.'
         csv_ext = '.csv'
         statements = [
-                x for x in statements\
-                if offender not in x\
-                if lock_file not in x\
+                x for x in statements
+                if offender not in x
+                if lock_file not in x
                 if csv_ext in x
                 ]
 
@@ -313,4 +312,3 @@ if len(unable_to_move) > 0:
         )
     for file in unable_to_move:
         print(f'\t --> {file}')
-
