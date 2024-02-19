@@ -290,9 +290,9 @@ if not os.path.exists(completed_folder):
 unable_to_move = []
 for statement in statements:
     try:
-        shutil.move(statement, completed_folder)
+        shutil.move(path + statement, completed_folder)
     except shutil.Error:
-        unable_to_move.append(statement)
+        unable_to_move.append(path + statement)
 
 # Stop the clock!
 end = time.time()
