@@ -1,11 +1,11 @@
 {
-"AirBNB Income": ["creditairbnbpayment", "visa transfer airbnb"],
+"AirBNB": ["creditairbnbpayment", "visa transfer airbnb"],
 
 "Car Payments": ["jpmorgan chase"],
 "Charity": ["berean community", "the navigators donor", "wycliffe bible"],
 "Checks": ["check", "mobile dep capture"],
 "Coffee Shops": ["cafe steam", "caribou", "coffee", "dixon", "dutch bros", "espresso", "starbucks"],
-"Credit Card Payments": ["amexepayment"],
+"Credit Card Payments": ["amexepayment", "mobilepaymentthankyou"],
 
 "Fast Food": ["dairy queen", "mayo harwic", "mayo method", "mayo st mary"],
 "Fees / Services": ["building safety", "citations", "driver services", "oertli pleschourt", "park mobile", "usps po"],
@@ -20,7 +20,7 @@
 "Medical": ["zumbroview dental"],
 "Mortgage Payments": ["flagstar", "roundpoint"],
 
-"Nursing": ["college transcript", "ncsbn", "nursing", "nursing cas", "parchment"],
+"Nursing": ["college transcript", "ets erg", "ncsbn", "nursing", "nursing cas", "parchment"],
 
 "Paychecks": ["Credit Card Paymentsmayo foundation", "travel nurse acros payroll"], 
 "Pharmacy": ["pharmacy"],
