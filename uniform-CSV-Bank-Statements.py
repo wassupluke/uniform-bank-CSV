@@ -194,7 +194,7 @@ for statement in statements:
     # Firstly, locate the column containing 'date'
     # but make sure to take only the transaction date not the posted date if
     # both exist, as is the case with AMEX.
-    if df[[df.columns[df.columns.str.contains('Posted Date')]]:
+    if df[df.columns[df.columns.str.contains('Posted Date')]]:
         date_col = df[df.columns[df.columns.str.contains('Transaction Date')]]
     else:
         date_col = df[df.columns[df.columns.str.contains('Date')]]
