@@ -192,7 +192,12 @@ for statement in statements:
     df = pd.read_csv(statement)
 
     # Firstly, locate the column containing 'date'
-    date_col = df[df.columns[df.columns.str.contains('Date')]]
+    # but make sure to take only the transaction date not the posted date if
+    # both exist, as is the case with AMEX.
+    if df[[df.columns[.columns.str.contains('Posted Date')]]:
+        date_col = df[df.columns[df.columns.str.contains('Transaction Date')]]
+    else:
+        date_col = df[df.columns[df.columns.str.contains('Date')]]
     # add the date_col to tmp dataframe
     tmp['Date'] = date_col
 
