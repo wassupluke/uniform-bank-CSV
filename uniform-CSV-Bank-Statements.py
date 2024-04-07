@@ -230,7 +230,8 @@ for statement in statements:
         tmp['Expense'] = amt_cols['Expense'].abs()
     # AMEX, as a credit card, shows purchases as positive numbers, and returns
     # as negative numbers, so let's handle that case.
-    elif any(df.columns.str.contains('Appears On Your Statement As')):
+    elif (any(df.columns.str.contains('Appears On Your Statement As')) or
+            any(df.columns.str.contains('Card Member'))):
         tmp['Income'] = amt_cols[amt_cols < 0].abs()
         tmp['Expense'] = amt_cols[amt_cols >= 0]
         tmp['Amount'] = tmp['Income']
