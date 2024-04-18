@@ -29,7 +29,7 @@ def check_user() -> str:
             if user == 1:
                 return 'wassu'
             if user == 2:
-                return 'alyssawass'
+                return 'alyssa'
             raise Exception(f'"{user}" wasn\'t an option. Try again.')
         except ValueError:
             print(
