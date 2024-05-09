@@ -22,7 +22,7 @@ import warnings
 warnings.simplefilter(action='ignore', category=FutureWarning)
 
 
-def categorize(df: object) -> object:
+def categorize(data: object) -> object:
     """
     Function takes a pandas DataFrame and scans the Description column to
     see in what subcategory the transaction should be placed. Function
@@ -37,9 +37,9 @@ def categorize(df: object) -> object:
         categories = json.load(file)
 
     # iterate through the DataFrame rows and try matching a subcategory
-    for row in df.index:
+    for row in data.index:
         # remove non-word characters
-        desc = df.at[row, 'Description'].lower()
+        desc = data.at[row, 'Description'].lower()
         desc = re.sub(r'\W', '', desc)
 
         # search for a matching subcategory for this description
@@ -50,7 +50,7 @@ def categorize(df: object) -> object:
                 text = re.sub(r'\W', '', text)
                 if text in desc:
                     # found a match, adding the subcategory label
-                    df.at[row, 'SubCategory'] = subcategory
+                    data.at[row, 'SubCategory'] = subcategory
                     break
 
         # fix specific typos
@@ -86,9 +86,9 @@ def categorize(df: object) -> object:
         desc = re.sub(r'pre[| ]authorized\s(?:credit |debit )*', '', desc)
 
         # replace old, messy description with pretty, new one
-        df.at[row, 'Description'] = desc
+        data.at[row, 'Description'] = desc
 
-    return df
+    return data
 
 
 def append_dataframe_to_sheet(sheet_key, sheet_name, dataframe) -> None:
