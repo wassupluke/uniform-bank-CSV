@@ -1,6 +1,7 @@
 # importing required modules
 import calendar
 from datetime import datetime
+from dotenv import load_dotenv
 import gspread
 import json
 import os
@@ -101,24 +102,34 @@ def append_dataframe_to_sheet(sheet_key, sheet_name, dataframe) -> None:
     dataframe = dataframe.fillna('')
 
     # Select the worksheet by name
-    try:
-        worksheet = sh.worksheet(sheet_name)
-    except gspread.exceptions.WorksheetNotFound:
-        print(
-            f"The sheet, \"{sheet_name}\" does not exist in your workbook."
-            "Please:\n"
-            f"\t- Duplicate \"{int(sheet_name) - 1}\"\n"
-            "\t- Delete all but the first row\n"
-            "\t- Re-run this script\n"
-            f"https://docs.google.com/spreadsheets/d/{sheet_key}/edit"
-        )
-        sys.exit()
+    worksheet = sh.worksheet(sheet_name)
 
     # Convert the DataFrame to a list of lists for easy appending
     values = dataframe.values.tolist()
 
     # Append the values to the selected range in the worksheet
     worksheet.append_rows(values, "USER_ENTERED", "INSERT_ROWS")
+
+
+def verify_sheet_existance(sheet_key, years):
+     # Authenticate with Google Sheets
+    gc = gspread.service_account()
+
+    # Open the Google Sheet by Key
+    sh = gc.open_by_key(sheet_key)
+    try:
+        for year in years:
+            sh.worksheet(year)
+    except gspread.exceptions.WorksheetNotFound:
+        print(
+            f"The sheet, \"{year}\" does not exist in your workbook."
+            "Please:\n"
+            f"\t- Duplicate \"{int(year) - 1}\"\n"
+            "\t- Delete all but the first row\n"
+            "\t- Re-run this script\n"
+            f"https://docs.google.com/spreadsheets/d/{sheet_key}/edit"
+        )
+        sys.exit()
 
 
 # -------------------------------------------------------------------------- #
@@ -134,6 +145,7 @@ print(
         )
 
 # -------------------------------------------------------------------------- #
+load_dotenv()
 
 # initializing master dataframe
 columns = {
@@ -239,9 +251,9 @@ for statement in statements:
         # this is the case for Bremer where we simply rename the columns
         amt_cols.columns = 'Expense Income'.split()
         tmp['Income'] = amt_cols['Income']
-        tmp['Amount'] = amt_cols['Income']
-        tmp['Amount'] = tmp['Amount'].fillna(amt_cols['Expense'], inplace=True)
         tmp['Expense'] = amt_cols['Expense'].abs()
+        tmp['Amount'] = amt_cols['Income']
+        tmp['Amount'] = tmp['Amount'].fillna(amt_cols['Expense'])
     # AMEX, as a credit card, shows purchases as positive numbers, and returns
     # as negative numbers, so let's handle that case.
     elif (any(df.columns.str.contains('Appears On Your Statement As')) or
@@ -300,6 +312,9 @@ master.drop(card_pymt_rows, inplace=True)
 zeros = master[(master['Amount'] == 0)].index
 master.drop(zeros, inplace=True)
 
+# Split dataframe by year
+df_list = [d for _, d in master.groupby(['Year'])]
+
 # before moving the files, ensure the destination folder exists or make it
 if not os.path.exists(completed_folder):
     os.makedirs(completed_folder)
@@ -320,13 +335,22 @@ end = time.time()
 
 print(f'\n{master}\n{master.size} cells processed.\n')
 
+# Verify appropriate sheets exist
+unique_years = set()
+for df in df_list:
+    unique_years.update(df['Year'].unique())
+unique_years = sorted(unique_years)
+unique_years = [str(y) for y in unique_years]
+verify_sheet_existance(os.getenv("SHEET_KEY"), unique_years)
+
 # Automagically append to Google Sheets
 print("Automagically appending data to Google Sheets")
-append_dataframe_to_sheet(
-        '1nzYSm8f12vPs-oI9zsZoKtFcHOptFCU2qKDBj-m2qgI',  # sheet_key
-        str(round(master["Year"].mean())),  # sheet_name is the year the data came from
-        master  # dataframe to append
-)
+for df in df_list:
+    append_dataframe_to_sheet(
+            os.getenv("SHEET_KEY"),  # sheet_key
+            str(round(df['Year'].mean())),  # sheet_name is the year the data came from
+            df  # dataframe to append
+    )
 
 # write out the file file to CSV for uploading to Google Sheets
 now = datetime.now().strftime("%m-%d-%Y %H:%M:%S")
