@@ -1,6 +1,7 @@
 # importing required modules
 import calendar
 from datetime import datetime
+import gspread
 import json
 import os
 import re
@@ -9,42 +10,24 @@ import sys
 import time
 import wordninja
 import pandas as pd
-# Currently, Pandas gives a FutureWarning regarding concatenation of
-# dataframes with some or all-NA values. It just says to make sure to take out
-# any NA content (like empty rows) prior to concatenation when the next
-# release comes out. For now, it prints the warning to terminal and it's ugly.
-# So let's ignore it.
+"""
+Currently, Pandas gives a FutureWarning regarding concatenation of
+dataframes with some or all-NA values. It just says to make sure to take out
+any NA content (like empty rows) prior to concatenation when the next
+release comes out. For now, it prints the warning to terminal and it's ugly.
+So let's ignore it.
+"""
 import warnings
 warnings.simplefilter(action='ignore', category=FutureWarning)
 
 
-def check_user() -> str:
-    while True:
-        try:
-            user = input(
-                    'First, let me know who\'s computer is running the '
-                    'script.\n(1): Luke, or (2): Alyssa  '
-                    )
-            user = int(user)
-            if user == 1:
-                return 'wassu'
-            if user == 2:
-                return 'alyssa'
-            raise Exception(f'"{user}" wasn\'t an option. Try again.')
-        except ValueError:
-            print(
-                '\nThat didn\'t look like a valid number. Please try again, '
-                'or reach out to Luke for assistance getting this to run.\n'
-                )
-        except Exception as e:
-            print(f'\n{e.args[0]}\n')
-
-
 def categorize(df: object) -> object:
-    # Function takes a pandas DataFrame and scans the Description column to
-    # see in what subcategory the transaction should be placed. Function
-    # returns an updated DataFrame complete with categorized transactions.
-    # Function also fixes Description strings with wordninja.
+    """
+    Function takes a pandas DataFrame and scans the Description column to
+    see in what subcategory the transaction should be placed. Function
+    returns an updated DataFrame complete with categorized transactions.
+    Function also fixes Description strings with wordninja.
+    """
 
     # importing our list of categories
     dirname = os.path.dirname(__file__)
@@ -107,6 +90,37 @@ def categorize(df: object) -> object:
     return df
 
 
+def append_dataframe_to_sheet(sheet_key, sheet_name, dataframe) -> None:
+    # Authenticate with Google Sheets
+    gc = gspread.service_account()
+
+    # Open the Google Sheet by Key
+    sh = gc.open_by_key(sheet_key)
+
+    # Handle NaN's for JSON
+    dataframe = dataframe.fillna('')
+
+    # Select the worksheet by name
+    try:
+        worksheet = sh.worksheet(sheet_name)
+    except gspread.exceptions.WorksheetNotFound:
+        print(
+            f"The sheet, \"{sheet_name}\" does not exist in your workbook."
+            "Please:\n"
+            f"\t- Duplicate \"{int(sheet_name) - 1}\"\n"
+            "\t- Delete all but the first row\n"
+            "\t- Re-run this script\n"
+            f"https://docs.google.com/spreadsheets/d/{sheet_key}/edit"
+        )
+        sys.exit()
+
+    # Convert the DataFrame to a list of lists for easy appending
+    values = dataframe.values.tolist()
+
+    # Append the values to the selected range in the worksheet
+    worksheet.append_rows(values, "USER_ENTERED", "INSERT_ROWS")
+
+
 # -------------------------------------------------------------------------- #
 
 # a little help text to kick things off
@@ -115,7 +129,7 @@ print(
         '\n\n'
         '# -------------------------------------------------------------- #\n'
         '# ------         Bank Transaction File Processor for      ------ #\n'
-        '# ------           AMEX, Bremer, TIAA, or EverBank        ------ #\n'
+        '# ------             AMEX, Bremer, TIAA/EverBank          ------ #\n'
         '# -------------------------------------------------------------- #\n'
         )
 
@@ -141,10 +155,9 @@ master = master.astype(columns)
 
 while True:
     try:
-        # Let's make this work nicely for different users
-        user = check_user()
-
+        # TODO: handle Windows vs Linux
         # specify path to paystub PDF file
+        user = os.environ["USERNAME"] if sys.platform.startswith("win") else os.environ["USER"]
         path = f'/home/{user}/Documents/bank statements/new/'
         completed_folder = f'/home/{user}/Documents/bank statements/completed/'
 
@@ -178,6 +191,7 @@ while True:
                 f'\nHm... we can\'t seem to find {path}. Double check that '
                 'you selected the correct option. Please try again.\n'
                 )
+        sys.exit()
 
 # Start the timer, let's see how fast this baby runs!
 start = time.time()
@@ -268,12 +282,14 @@ master['Date'] = master['Date'].dt.strftime('%m/%d/%Y')
 # make a DataFrame from master's SubCategory and Description columns
 master = categorize(master)
 
-# Before we break the strings back into words, let's remove any rows
-# for credit card payments, as credit card payments are just the sum
-# owed of money we've already spent on individual purchases. The
-# individual purchases will all be detailed and covered by the rest of
-# the data. So we need not bother with seeing numbers for credit card
-# payments.
+"""
+Before we break the strings back into words, let's remove any rows
+for credit card payments, as credit card payments are just the sum
+owed of money we've already spent on individual purchases. The
+individual purchases will all be detailed and covered by the rest of
+the data. So we need not bother with seeing numbers for credit card
+payments.
+"""
 card_pymt_rows = master[
         (master['Description'] == 'payment thankyou') |
         (master['SubCategory'] == 'Credit Card Payments')
@@ -303,6 +319,14 @@ for statement in statements:
 end = time.time()
 
 print(f'\n{master}\n{master.size} cells processed.\n')
+
+# Automagically append to Google Sheets
+print("Automagically appending data to Google Sheets")
+append_dataframe_to_sheet(
+        '1nzYSm8f12vPs-oI9zsZoKtFcHOptFCU2qKDBj-m2qgI',  # sheet_key
+        str(round(master["Year"].mean())),  # sheet_name is the year the data came from
+        master  # dataframe to append
+)
 
 # write out the file file to CSV for uploading to Google Sheets
 now = datetime.now().strftime("%m-%d-%Y %H:%M:%S")
