@@ -1,5 +1,5 @@
 cachetools==5.3.3
-certifi==2024.2.2
+certifi==2024.7.4
 charset-normalizer==3.3.2
 google-auth==2.29.0
 google-auth-oauthlib==1.2.0
@@ -20,5 +20,5 @@ rsa==4.9
 six==1.16.0
 StrEnum==0.4.15
 tzdata==2024.1
-urllib3==2.2.1
+urllib3==2.2.2
 wordninja==2.0.0
