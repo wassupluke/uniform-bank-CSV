@@ -16,7 +16,7 @@ python-dotenv==1.0.1
 pytz==2026.1.post1
 requests==2.32.4
 requests-oauthlib==2.0.0
-rsa==4.9
+rsa==4.9.1
 six==1.16.0
 StrEnum==0.4.15
 tzdata==2025.3
