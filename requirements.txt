@@ -1,7 +1,7 @@
 cachetools>=7.1.1
 certifi>=2026.4.22
 charset-normalizer>=3.4.7
-google-auth>=2.29.0
+google-auth>=2.56.0
 google-auth-oauthlib>=1.2.0
 gspread>=6.2.1
 idna>=3.7
